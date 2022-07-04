@@ -1,0 +1,9 @@
+.todos {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 3rem 1rem;
+    display: grid;
+    justify-content: center;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(450px,600px));
+}

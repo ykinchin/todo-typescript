@@ -1,0 +1,26 @@
+.todo {
+  color: black;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: rgba(247, 237, 148, 0.7);
+  word-break: break-all;
+  gap: 10px;
+
+  .todo__icons {
+    display: flex;
+    gap: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+
+    :nth-child(2) {
+      color: rgb(188, 57, 57);
+    }
+
+    :nth-child(3) {
+      color: rgb(30, 155, 30);
+    }
+  }
+}
