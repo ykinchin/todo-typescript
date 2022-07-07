@@ -1,39 +1,37 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { AiFillEdit, AiOutlineCheck, AiFillDelete } from "react-icons/ai";
+import {
+  AiFillEdit,
+  AiOutlineCheck,
+  AiFillDelete,
+  AiOutlineClose,
+} from "react-icons/ai";
 
 import styles from "./Todo.module.scss";
 import { ITodo } from "../../types/types";
+import { useAppDispatch } from "../../hooks";
+import {
+  removeTodo,
+  toggleComplete,
+  updateTodo,
+} from "../../store/reducers/todoSlice";
 
 interface Props {
   todo: ITodo;
-  todos: ITodo[];
-  setTodos: React.Dispatch<React.SetStateAction<ITodo[]>>;
 }
 
-const Todo: FC<Props> = ({ todo, todos, setTodos }) => {
+const Todo: FC<Props> = ({ todo }) => {
+  const dispatch = useAppDispatch();
   const [edit, setEdit] = useState<boolean>(false);
-  const [editTodo, setEditTodo] = useState<string>(todo.todo);
+  const [editTodo, setEditTodo] = useState<string>(todo.text);
 
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     inputRef.current?.focus();
   }, [edit]);
 
-  const onCompleteHandler = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
-      )
-    );
-  };
-  const onRemoveHandler = (id: number) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
-  const onEditHandler = (e: React.FormEvent, id: number) => {
+  const onEditHandler = (e: React.FormEvent) => {
     e.preventDefault();
-    setTodos(
-      todos.map((todo) => (todo.id === id ? { ...todo, todo: editTodo } : todo))
-    );
+    dispatch(updateTodo({ id: todo.id, text: editTodo, isDone: todo.isDone }));
     setEdit(false);
   };
 
@@ -41,7 +39,7 @@ const Todo: FC<Props> = ({ todo, todos, setTodos }) => {
     <form
       className={styles.todo}
       onSubmit={(e) => {
-        onEditHandler(e, todo.id);
+        onEditHandler(e);
       }}
     >
       {edit ? (
@@ -52,15 +50,15 @@ const Todo: FC<Props> = ({ todo, todos, setTodos }) => {
           onChange={(e) => setEditTodo(e.target.value)}
         />
       ) : todo.isDone ? (
-        <s className={styles.todo__text}>{todo.todo}</s>
+        <s className={styles.todo__text}>{todo.text}</s>
       ) : (
-        <span className={styles.todo__text}>{todo.todo}</span>
+        <span className={styles.todo__text}>{todo.text}</span>
       )}
 
       <div className={styles.todo__icons}>
         <span
           className={styles.todo__icon}
-          onClick={() => {
+          onClick={(id) => {
             !edit && !todo.isDone && setEdit(!edit);
           }}
         >
@@ -68,15 +66,15 @@ const Todo: FC<Props> = ({ todo, todos, setTodos }) => {
         </span>
         <span
           className={styles.todo__icon}
-          onClick={() => onRemoveHandler(todo.id)}
+          onClick={() => dispatch(removeTodo(todo.id))}
         >
           <AiFillDelete />
         </span>
         <span
           className={styles.todo__icon}
-          onClick={() => onCompleteHandler(todo.id)}
+          onClick={() => dispatch(toggleComplete(todo.id))}
         >
-          <AiOutlineCheck />
+          {todo.isDone ? <AiOutlineClose color='red' /> : <AiOutlineCheck />}
         </span>
       </div>
     </form>
